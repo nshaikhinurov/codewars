@@ -1,33 +1,12 @@
 {
   "extends": "next/core-web-vitals",
   "rules": {
-    "react-hooks/exhaustive-deps": "error",
-    "react/display-name": "off", // TODO: replace with warn
-    "react/no-unescaped-entities": "off", // TODO: replace with warn
-    "@next/next/no-img-element": "off", // TODO: replace with warn
     "import/no-anonymous-default-export": "off", // TODO: replace with warn
     "prefer-const": [
       "error",
       {
         "destructuring": "any",
         "ignoreReadBeforeAssign": false
-      }
-    ],
-    "import/no-unused-modules": [
-      "warn",
-      {
-        "unusedExports": true,
-        "missingExports": false
-      }
-    ],
-    "import/order": [
-      "warn",
-      {
-        "groups": [
-          ["builtin", "external"],
-          ["internal", "parent", "sibling"]
-        ],
-        "newlines-between": "always"
       }
     ],
     "padding-line-between-statements": [

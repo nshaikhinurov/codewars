@@ -9,10 +9,10 @@ export function dblLinear(n: number): number {
 const U = (n: number): Record<number, number> => {
   const u: Record<number, number> = {};
   let size = 0;
-  const queue = createReversedLinkedList(1);
+  const queue = createDoublyLinkedList(1);
 
   while (size <= n) {
-    const x = queue.pop(queue);
+    const x = queue.firstNode.value;
 
     if (x !== u[size - 1]) {
       u[size] = x;
@@ -21,8 +21,10 @@ const U = (n: number): Record<number, number> => {
 
     const y = 2 * x + 1;
     const z = 3 * x + 1;
-    queue.insert(queue, y);
-    queue.insert(queue, z);
+
+    queue.insertWithOrder(y);
+    queue.insertWithOrder(z);
+    queue.pop();
   }
 
   return u;
@@ -37,60 +39,65 @@ type DoublyLinkedNode<T> = {
 type DoublyLinkedList<T> = {
   firstNode: DoublyLinkedNode<T>;
   lastNode: DoublyLinkedNode<T>;
-  getLength: () => number;
-  insert: (list: DoublyLinkedList<T>, v: T) => void;
-  pop: (list: DoublyLinkedList<T>) => T;
+  insertWithOrder: (this: DoublyLinkedList<T>, value: T) => void;
+  pop: (this: DoublyLinkedList<T>) => T;
 };
 
-const createReversedLinkedList = <T>(value: T): DoublyLinkedList<T> => {
+const createDoublyLinkedList = <T>(value: T): DoublyLinkedList<T> => {
   const node: DoublyLinkedNode<T> = {
     value,
     prev: null,
     next: null,
   };
 
-  let length = 1;
-
-  const insert: DoublyLinkedList<T>['insert'] = (list, value) => {
-    let currentNode: DoublyLinkedNode<T> = list.lastNode;
-
-    while (value < currentNode.value) {
-      currentNode = currentNode.prev as DoublyLinkedNode<T>;
-    }
-
-    if (value > currentNode.value) {
-      const newNode: DoublyLinkedNode<T> = {
-        value,
-        prev: currentNode,
-        next: currentNode.next,
-      };
-
-      if (currentNode.next === null) {
-        list.lastNode = newNode;
-      }
-
-      currentNode.next = newNode;
-      length++;
-    }
-  };
-
-  const pop: DoublyLinkedList<T>['pop'] = list => {
-    let firstNode: DoublyLinkedNode<T> = list.firstNode;
-
-    if (firstNode.next) {
-      firstNode.next.prev = null;
-      list.firstNode = firstNode.next;
-    }
-
-    return firstNode.value;
-  };
-
   return {
     firstNode: node,
     lastNode: node,
-    insert,
-    pop,
-    getLength: () => length,
+    insertWithOrder(this: DoublyLinkedList<T>, value: T) {
+      let currentNode = this.firstNode;
+
+      while (currentNode.value < value && currentNode.next) {
+        currentNode = currentNode.next;
+      }
+
+      if (currentNode.value < value) {
+        const newNode: DoublyLinkedNode<T> = {
+          value,
+          prev: currentNode,
+          next: null,
+        };
+
+        currentNode.next = newNode;
+        this.lastNode = newNode;
+      } else if (currentNode.value > value) {
+        const newNode: DoublyLinkedNode<T> = {
+          value,
+          prev: currentNode.prev,
+          next: currentNode,
+        };
+
+        if (currentNode.prev) {
+          currentNode.prev.next = newNode;
+        } else {
+          this.firstNode = newNode;
+        }
+
+        currentNode.prev = newNode;
+      }
+    },
+
+    pop(this: DoublyLinkedList<T>) {
+      const node = this.firstNode;
+
+      if (!node.next) {
+        throw new Error('Cannot pop last node');
+      }
+
+      this.firstNode = node.next;
+      this.firstNode.prev = null;
+
+      return node.value;
+    },
   };
 };
 
