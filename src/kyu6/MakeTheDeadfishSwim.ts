@@ -6,6 +6,7 @@ const commands: Record<string, (v: number, result: number[]) => number> = {
   s: (v: number) => v * v,
   o: (v: number, result: number[]) => {
     result.push(v);
+
     return v;
   },
 };

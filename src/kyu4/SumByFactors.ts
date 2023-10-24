@@ -35,10 +35,12 @@ const maxAbsValueOf = (I: number[]): number => {
 
   for (const i of I) {
     const abs_i = Math.abs(i);
+
     if (abs_i > maxAbs) {
       maxAbs = abs_i;
     }
   }
+
   return maxAbs;
 };
 
