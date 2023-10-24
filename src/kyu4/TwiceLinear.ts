@@ -41,6 +41,7 @@ type DoublyLinkedList<T> = {
   lastNode: DoublyLinkedNode<T>;
   insertWithOrder: (this: DoublyLinkedList<T>, value: T) => void;
   pop: (this: DoublyLinkedList<T>) => T;
+  length: number;
 };
 
 const createDoublyLinkedList = <T>(value: T): DoublyLinkedList<T> => {
@@ -51,38 +52,44 @@ const createDoublyLinkedList = <T>(value: T): DoublyLinkedList<T> => {
   };
 
   return {
+    length: 1,
     firstNode: node,
     lastNode: node,
     insertWithOrder(this: DoublyLinkedList<T>, value: T) {
-      let currentNode = this.firstNode;
+      let step = 0;
+      let currentNode = this.lastNode;
 
-      while (currentNode.value < value && currentNode.next) {
-        currentNode = currentNode.next;
+      while (currentNode.value > value && currentNode.prev) {
+        currentNode = currentNode.prev;
+        step++;
       }
 
-      if (currentNode.value < value) {
+      if (currentNode.value > value) {
         const newNode: DoublyLinkedNode<T> = {
           value,
-          prev: currentNode,
-          next: null,
-        };
-
-        currentNode.next = newNode;
-        this.lastNode = newNode;
-      } else if (currentNode.value > value) {
-        const newNode: DoublyLinkedNode<T> = {
-          value,
-          prev: currentNode.prev,
+          prev: null,
           next: currentNode,
         };
 
-        if (currentNode.prev) {
-          currentNode.prev.next = newNode;
+        currentNode.prev = newNode;
+        this.firstNode = newNode;
+        this.length += 1;
+      } else if (currentNode.value < value) {
+        const newNode: DoublyLinkedNode<T> = {
+          value,
+          prev: currentNode,
+          next: currentNode.next,
+        };
+
+        if (currentNode.next) {
+          currentNode.next.prev = newNode;
         } else {
-          this.firstNode = newNode;
+          this.lastNode = newNode;
         }
 
-        currentNode.prev = newNode;
+        currentNode.next = newNode;
+        this.length += 1;
+        console.table({ step, length: this.length, value });
       }
     },
 
@@ -95,6 +102,7 @@ const createDoublyLinkedList = <T>(value: T): DoublyLinkedList<T> => {
 
       this.firstNode = node.next;
       this.firstNode.prev = null;
+      this.length -= 1;
 
       return node.value;
     },
